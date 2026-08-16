@@ -1,10 +1,6 @@
 {
-  "name": "ZeitimGriff",
-  "short_name": "ZeitimGriff",
-  "start_url": "./",
-  "display": "standalone",
-  "background_color": "#f3f5f9",
-  "theme_color": "#111827",
+  "name": "DALM on Fire",
+  "short_name": "DALM",
   "icons": [
     {
       "src": "icons/icon-192.png",
@@ -16,5 +12,8 @@
       "sizes": "512x512",
       "type": "image/png"
     }
-  ]
+  ],
+  "display": "standalone",
+  "background_color": "#0b0b0b",
+  "theme_color": "#0b0b0b"
 }

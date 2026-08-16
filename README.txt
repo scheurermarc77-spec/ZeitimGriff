@@ -1,8 +1,20 @@
-DALM on Fire – App-Icon Dateien
+ZeitimGriff v5 – kompletter Upload
 
-Für deine bestehende ZeitimGriff-App:
-1. Den Ordner „icons“ hochladen/ersetzen.
-2. Falls deine App bereits ein manifest.webmanifest besitzt, kannst du auch dieses ersetzen.
-3. Für iPhone muss index.html auf icons/apple-touch-icon.png verweisen:
-   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-4. Danach die App ggf. vom iPhone-Homebildschirm löschen und neu über Safari → Teilen → Zum Home-Bildschirm hinzufügen.
+Enthalten:
+- komplette ZeitimGriff-App
+- Firebase-Verbindung
+- persönliche Zeiterfassung für Anouk, Leon, Daniela und Marc
+- Tages- und Wochenwerte
+- direkte Navigation «Meine Zeit» / «Übersicht»
+- gemeinsame Übersicht aller vier Personen
+- DALM on Fire App-Icon für iPhone/PWA
+
+UPLOAD:
+1. ZIP entpacken.
+2. ALLE Dateien und den Ordner icons in dein GitHub-Repository hochladen.
+3. Vorhandene Dateien ersetzen.
+4. GitHub Pages kurz aktualisieren lassen.
+5. Webseite in Safari neu laden.
+6. Falls auf dem Home-Bildschirm noch das alte Icon erscheint:
+   altes App-Symbol löschen und die Webseite erneut über
+   Safari → Teilen → Zum Home-Bildschirm hinzufügen.

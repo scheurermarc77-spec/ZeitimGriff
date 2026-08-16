@@ -1,5 +1,5 @@
 const PEOPLE=["Anouk","Leon","Daniela","Marc"],OVERVIEW="Übersicht",TARGET=510,WEEK=2550,$=s=>document.querySelector(s);
-let person=localStorage.getItem("zg_person"), data={}, db=null, unsub=null;
+let person=localStorage.getItem("zg_person"), data={}, db=null, unsub=null; let currentView=localStorage.getItem("zg_view")||"mine";
 const pad=n=>String(n).padStart(2,"0"), iso=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`, fmt=m=>`${Math.floor(Math.max(0,m)/60)}:${pad(Math.round(Math.max(0,m))%60)}`;
 const delta=m=>(m>0?"+ ":m<0?"− ":"± ")+fmt(Math.abs(m)), mon=d=>{let x=new Date(d);x.setHours(0,0,0,0);x.setDate(x.getDate()-((x.getDay()+6)%7));return x}, add=(d,n)=>{let x=new Date(d);x.setDate(x.getDate()+n);return x};
 function ensure(ds){data[ds]??={entries:[],running:null};return data[ds]}
@@ -23,7 +23,8 @@ unsub=F.onSnapshot(ref,s=>{data=s.exists()?(s.data().days||{}):{};render()});
 async function save(){await F.setDoc(F.doc(db,"timeappUsers",person),{days:data,updatedAt:new Date().toISOString()},{merge:true})}
 function calcMins(dataset,ds,now=new Date()){let d=dataset?.[ds],t=0;if(!d)return 0;for(const e of d.entries||[])t+=(new Date(e.end)-new Date(e.start))/60000;if(d.running)t+=(now-new Date(d.running))/60000;return t}
 function renderOverview(){
- if(person!==OVERVIEW)return;
+ if(currentView!=="overview")return;
+ $("#tabMine").classList.remove("active");$("#tabOverview").classList.add("active");
  $("#personBtn").textContent=OVERVIEW;
  document.querySelector(".hero").classList.add("hidden");
  document.querySelector(".stats").classList.add("hidden");
@@ -44,7 +45,8 @@ function renderOverview(){
  });
 }
 function render(){
-if(person===OVERVIEW){renderOverview();return}
+if(currentView==="overview"){renderOverview();return}
+$("#tabOverview").classList.remove("active");$("#tabMine").classList.add("active");
 document.querySelector(".hero").classList.remove("hidden");document.querySelector(".stats").classList.remove("hidden");document.querySelector(".week").classList.remove("hidden");$("#overviewCard").classList.add("hidden");
 if(!person){$("#sheet").classList.remove("hidden");return}
 $("#personBtn").textContent=person;
@@ -97,6 +99,30 @@ $("#avg").textContent=relevantWorkdays?fmt(we/relevantWorkdays):"0:00";
 $("#range").textContent=`${mo.toLocaleDateString("de-CH",{day:"2-digit",month:"2-digit"})} – ${sun.toLocaleDateString("de-CH",{day:"2-digit",month:"2-digit",year:"numeric"})}`;
 }
 $("#toggle").onclick=async()=>{let now=new Date(),ds=iso(now),d=ensure(ds);if(d.running){d.entries.push({start:d.running,end:now.toISOString()});d.running=null}else d.running=now.toISOString();await save();render()}
-$("#personBtn").onclick=()=>$("#sheet").classList.remove("hidden");PEOPLE.forEach(p=>{let b=document.createElement("button");b.className="person";b.textContent=p;b.onclick=()=>{person=p;localStorage.setItem("zg_person",p);$("#sheet").classList.add("hidden");subscribe()};$("#people").appendChild(b)});let ob=document.createElement("button");ob.className="person";ob.textContent="Übersicht";ob.onclick=()=>{person=OVERVIEW;localStorage.setItem("zg_person",OVERVIEW);$("#sheet").classList.add("hidden");subscribe()};$("#people").appendChild(ob);
+$("#personBtn").onclick=()=>$("#sheet").classList.remove("hidden");PEOPLE.forEach(p=>{let b=document.createElement("button");b.className="person";b.textContent=p;b.onclick=()=>{person=p;localStorage.setItem("zg_person",p);$("#sheet").classList.add("hidden");subscribe()};$("#people").appendChild(b)});
 $("#manual").onclick=()=>{$("#mDate").value=iso(new Date());$("#mStart").value="08:00";$("#mEnd").value="17:00";$("#manualSheet").classList.remove("hidden")};$("#cancel").onclick=()=>$("#manualSheet").classList.add("hidden");$("#saveManual").onclick=async()=>{let ds=$("#mDate").value,s=$("#mStart").value,e=$("#mEnd").value,a=new Date(`${ds}T${s}`),b=new Date(`${ds}T${e}`);if(b<=a)return alert("Endzeit muss nach Startzeit liegen.");ensure(ds).entries.push({start:a.toISOString(),end:b.toISOString()});await save();$("#manualSheet").classList.add("hidden");render()};
-await initFB(); if(person)subscribe(); else render(); setInterval(render,1000); if("serviceWorker"in navigator)navigator.serviceWorker.register("./sw.js");
+
+$("#tabMine").onclick=()=>{
+  currentView="mine";localStorage.setItem("zg_view","mine");
+  if(!person||person===OVERVIEW){person=PEOPLE[0];localStorage.setItem("zg_person",person);subscribe();}
+  render();
+};
+$("#tabOverview").onclick=()=>{
+  currentView="overview";localStorage.setItem("zg_view","overview");
+  if(unsub){if(Array.isArray(unsub))unsub.forEach(u=>u());else unsub();}
+  window.allData={};let us=[];
+  PEOPLE.forEach(p=>{
+    let ref=F.doc(db,"timeappUsers",p);
+    us.push(F.onSnapshot(ref,snap=>{window.allData[p]=snap.exists()?(snap.data().days||{}):{};renderOverview()}));
+  });
+  unsub=us;renderOverview();
+};
+
+await initFB();
+if(currentView==="overview"){$("#tabOverview").click();}
+else{
+  if(person&&person!==OVERVIEW)subscribe();
+  else{person=PEOPLE[0];localStorage.setItem("zg_person",person);subscribe();}
+}
+setInterval(()=>{if(currentView==="overview")renderOverview();else render();},1000);
+if("serviceWorker"in navigator)navigator.serviceWorker.register("./sw.js");

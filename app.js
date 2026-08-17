@@ -1,6 +1,6 @@
 const PEOPLE=["Anouk","Leon","Daniela","Marc"],OVERVIEW="Übersicht",TARGET=510,WEEK=2550,$=s=>document.querySelector(s);
-let person=localStorage.getItem("zg_person"), data={}, db=null, unsub=null; let currentView=localStorage.getItem("zg_view")||"mine";
-const pad=n=>String(n).padStart(2,"0"), iso=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`, fmt=m=>`${Math.floor(Math.max(0,m)/60)}:${pad(Math.round(Math.max(0,m))%60)}`;
+let person=localStorage.getItem("zg_person"), data={}, db=null, unsub=null; let expandedDays=new Set(); let currentView=localStorage.getItem("zg_view")||"mine";
+const pad=n=>String(n).padStart(2,"0"), clock=d=>`${pad(d.getHours())}:${pad(d.getMinutes())}`, iso=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`, fmt=m=>`${Math.floor(Math.max(0,m)/60)}:${pad(Math.round(Math.max(0,m))%60)}`;
 const delta=m=>(m>0?"+ ":m<0?"− ":"± ")+fmt(Math.abs(m)), mon=d=>{let x=new Date(d);x.setHours(0,0,0,0);x.setDate(x.getDate()-((x.getDay()+6)%7));return x}, add=(d,n)=>{let x=new Date(d);x.setDate(x.getDate()+n);return x};
 function ensure(ds){data[ds]??={entries:[],running:null};return data[ds]}
 function mins(ds,now=new Date()){let d=data[ds],t=0;if(!d)return 0;for(const e of d.entries||[])t+=(new Date(e.end)-new Date(e.start))/60000;if(d.running)t+=(now-new Date(d.running))/60000;return t}
@@ -44,6 +44,47 @@ function renderOverview(){
    box.appendChild(div);
  });
 }
+
+function renderStampDetails(ds, container){
+  const d=data[ds];
+  const list=document.createElement("div");
+  list.className="stamp-list";
+
+  if(!d || ((!d.entries || !d.entries.length) && !d.running)){
+    const empty=document.createElement("div");
+    empty.className="stamp-empty";
+    empty.textContent="Keine Stempelungen";
+    list.appendChild(empty);
+    container.appendChild(list);
+    return;
+  }
+
+  (d.entries||[]).forEach((e,idx)=>{
+    const a=new Date(e.start), b=new Date(e.end);
+    const item=document.createElement("div");
+    item.className="stamp-item";
+    item.innerHTML=`<div><div class="stamp-main">${clock(a)} – ${clock(b)}</div><div class="stamp-sub">${fmt((b-a)/60000)} Arbeitszeit</div></div><button class="stamp-delete">Löschen</button>`;
+    item.querySelector(".stamp-delete").onclick=async(ev)=>{
+      ev.stopPropagation();
+      if(!confirm(`Stempelung ${clock(a)} – ${clock(b)} wirklich löschen?`)) return;
+      data[ds].entries.splice(idx,1);
+      await save();
+      render();
+    };
+    list.appendChild(item);
+  });
+
+  if(d.running){
+    const a=new Date(d.running);
+    const item=document.createElement("div");
+    item.className="stamp-item stamp-running";
+    item.innerHTML=`<div><div class="stamp-main">${clock(a)} – läuft</div><div class="stamp-sub">Aktuell eingestempelt</div></div>`;
+    list.appendChild(item);
+  }
+
+  container.appendChild(list);
+}
+
 function render(){
 if(currentView==="overview"){renderOverview();return}
 $("#tabOverview").classList.remove("active");$("#tabMine").classList.add("active");
@@ -81,9 +122,14 @@ for(let i=0;i<7;i++){
     }
   }
 
+  let wrap=document.createElement("div"); wrap.className="day-wrap";
   let r=document.createElement("div"); r.className="day";
-  r.innerHTML=`<div><b>${d.toLocaleDateString("de-CH",{weekday:"short"})}</b><div>${d.toLocaleDateString("de-CH",{day:"2-digit",month:"2-digit"})}</div></div><div>${t?`Soll ${fmt(t)}`:"ohne Soll"}</div><div><strong>${fmt(x)}</strong><div class="${t?(z>=0?"good":"bad"):(x?"good":"")}">${t?delta(z):(x?"+ "+fmt(x):"± 0:00")}</div></div>`;
-  box.appendChild(r);
+  const stampCount=(data[s]?.entries||[]).length + (data[s]?.running?1:0);
+  r.innerHTML=`<div><b>${d.toLocaleDateString("de-CH",{weekday:"short"})}</b><div>${d.toLocaleDateString("de-CH",{day:"2-digit",month:"2-digit"})}</div></div><div>${t?`Soll ${fmt(t)}`:"ohne Soll"}<div>${stampCount} Stempelung${stampCount===1?"":"en"} <span class="day-chevron">${expandedDays.has(s)?"▲":"▼"}</span></div></div><div><strong>${fmt(x)}</strong><div class="${t?(z>=0?"good":"bad"):(x?"good":"")}">${t?delta(z):(x?"+ "+fmt(x):"± 0:00")}</div></div>`;
+  let det=document.createElement("div"); det.className="day-details"+(expandedDays.has(s)?"":" hidden");
+  renderStampDetails(s,det);
+  r.onclick=()=>{if(expandedDays.has(s))expandedDays.delete(s);else expandedDays.add(s);render();};
+  wrap.appendChild(r); wrap.appendChild(det); box.appendChild(wrap);
 }
 
 $("#week").textContent=fmt(we);

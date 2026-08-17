@@ -1,20 +1,14 @@
-ZeitimGriff v5 – kompletter Upload
+ZeitimGriff v6 – Stempelungen pro Tag
 
-Enthalten:
-- komplette ZeitimGriff-App
-- Firebase-Verbindung
-- persönliche Zeiterfassung für Anouk, Leon, Daniela und Marc
-- Tages- und Wochenwerte
-- direkte Navigation «Meine Zeit» / «Übersicht»
-- gemeinsame Übersicht aller vier Personen
-- DALM on Fire App-Icon für iPhone/PWA
+Neu:
+- Jeden Tag in der Wochenübersicht antippen.
+- Alle Ein- und Ausstempelungen des Tages erscheinen darunter.
+- Startzeit, Endzeit und Dauer sind ersichtlich.
+- Eine laufende Stempelung wird als «xx:xx – läuft» angezeigt.
+- Abgeschlossene Stempelungen können einzeln gelöscht werden.
+- Nach dem Löschen werden Tages- und Wochenwerte automatisch neu berechnet.
+- Firebase, gemeinsame Übersicht und DALM-on-Fire-Icon bleiben erhalten.
 
 UPLOAD:
-1. ZIP entpacken.
-2. ALLE Dateien und den Ordner icons in dein GitHub-Repository hochladen.
-3. Vorhandene Dateien ersetzen.
-4. GitHub Pages kurz aktualisieren lassen.
-5. Webseite in Safari neu laden.
-6. Falls auf dem Home-Bildschirm noch das alte Icon erscheint:
-   altes App-Symbol löschen und die Webseite erneut über
-   Safari → Teilen → Zum Home-Bildschirm hinzufügen.
+Alle Dateien aus diesem ZIP hochladen und die bisherigen Dateien ersetzen.
+Danach die Webseite in Safari neu laden.

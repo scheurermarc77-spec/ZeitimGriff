@@ -90,7 +90,7 @@ function renderStampDetails(ds, container){
   const type=dayType(data,ds);
   const controls=document.createElement("div");
   controls.className="daytype-box";
-  controls.innerHTML=`<div class="daytype-label">Tag deklarieren</div>
+  controls.innerHTML=`<div class="daytype-label">Tagesdefinition</div>
   <div class="daytype-actions">
     <button class="daytype-btn ${type==="normal"?"active":""}" data-type="normal">Arbeitstag</button>
     <button class="daytype-btn vacation ${type==="vacation"?"active":""}" data-type="vacation">Ferien</button>
@@ -150,10 +150,22 @@ for(let i=0;i<7;i++){
   let wrap=document.createElement("div"); wrap.className="day-wrap";
   let r=document.createElement("div"); r.className="day";
   const stampCount=(data[s]?.entries||[]).length + (data[s]?.running?1:0);
-  r.innerHTML=`<div><b>${d.toLocaleDateString("de-CH",{weekday:"short"})}</b><div>${d.toLocaleDateString("de-CH",{day:"2-digit",month:"2-digit"})}</div>${dtype!=="normal"?`<span class="daytype-badge ${dtype}">${dayTypeLabel(dtype)}</span>`:""}</div><div>${t?`Soll ${fmt(t)}`:(dtype!=="normal"?"Soll 0:00":"ohne Soll")}<div>${stampCount} Stempelung${stampCount===1?"":"en"} <span class="day-chevron">${expandedDays.has(s)?"▲":"▼"}</span></div></div><div><strong>${fmt(x)}</strong><div class="${t?(z>=0?"good":"bad"):(x?"good":"")}">${t?delta(z):(x?"+ "+fmt(x):"± 0:00")}</div></div>`;
+  r.innerHTML=`<div><b>${d.toLocaleDateString("de-CH",{weekday:"short"})}</b><div>${d.toLocaleDateString("de-CH",{day:"2-digit",month:"2-digit"})}</div></div><div>${t?`Soll ${fmt(t)}`:(dtype!=="normal"?"Soll 0:00":"ohne Soll")}<div>${stampCount} Stempelung${stampCount===1?"":"en"} <span class="day-chevron">${expandedDays.has(s)?"▲":"▼"}</span></div><button class="daytype-quick ${dtype}" data-date="${s}">${dtype==="normal"?"Arbeitstag":dayTypeLabel(dtype)}</button></div><div><strong>${fmt(x)}</strong><div class="${t?(z>=0?"good":"bad"):(x?"good":"")}">${t?delta(z):(x?"+ "+fmt(x):"± 0:00")}</div></div>`;
   let det=document.createElement("div"); det.className="day-details"+(expandedDays.has(s)?"":" hidden");
   renderStampDetails(s,det);
   r.onclick=()=>{if(expandedDays.has(s))expandedDays.delete(s);else expandedDays.add(s);render();};
+  const quick=r.querySelector(".daytype-quick");
+  if(quick){
+    quick.onclick=(ev)=>{
+      ev.stopPropagation();
+      expandedDays.add(s);
+      render();
+      setTimeout(()=>{
+        const btn=document.querySelector(`.daytype-quick[data-date="${s}"]`);
+        btn?.closest(".day-wrap")?.querySelector(".daytype-box")?.scrollIntoView({behavior:"smooth",block:"center"});
+      },50);
+    };
+  }
   wrap.appendChild(r); wrap.appendChild(det); box.appendChild(wrap);
 }
 

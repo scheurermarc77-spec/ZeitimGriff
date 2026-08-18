@@ -1,18 +1,14 @@
-ZeitimGriff v8 – Ferien und Feiertage
+ZeitimGriff v9 – Tagesdefinition sichtbar
 
-Neu:
-- In der Wochenübersicht einen Tag antippen.
-- Unter den Stempelungen kann der Tag mit einem Klick als
-  «Arbeitstag», «Ferien» oder «Feiertag» markiert werden.
-- Bei Ferien oder Feiertag beträgt die Sollzeit dieses Tages automatisch 0:00.
-- Der Tag wird in der Wochenübersicht entsprechend gekennzeichnet.
-- Das Wochensoll und Plus/Minus werden automatisch neu berechnet.
-- Bereits geleistete Arbeitszeit an einem Ferien-/Feiertag bleibt bestehen und zählt als Pluszeit.
-- Die Einstellung wird pro Person und Tag in Firebase gespeichert.
-
-Alle bisherigen Funktionen bleiben enthalten:
-Stempeln, manuelle Ein-/Ausstempelungen, Zeiträume, Löschen einzelner Stempelungen, Übersicht aller vier Personen und DALM-on-Fire-Icon.
+Verbesserung:
+- In jeder Tageszeile ist nun direkt ein Button sichtbar: «Arbeitstag», «Ferien» oder «Feiertag».
+- Ein Tipp auf diesen Button öffnet direkt die Tagesdefinition.
+- Dort kann mit einem Klick zwischen Arbeitstag, Ferien und Feiertag gewählt werden.
+- Ferien/Feiertag setzen die Sollzeit auf 0:00.
+- Montag bis Freitag bleiben standardmässig Arbeitstage.
+- Samstag/Sonntag bleiben standardmässig ohne Soll.
+- Alle übrigen Funktionen bleiben erhalten.
 
 UPLOAD:
-Alle Dateien aus diesem ZIP hochladen und die bisherigen Dateien ersetzen.
-Danach die Webseite in Safari neu laden.
+Alle Dateien aus diesem ZIP hochladen und vorhandene Dateien ersetzen.
+Danach Safari neu laden.

@@ -20,5 +20,20 @@
 <section id="overviewCard" class="card overview hidden"><div class="row"><div><b>Alle Personen</b><div>Gemeinsame Übersicht</div></div></div><div id="overview"></div></section><section class="card week"><div class="row"><div><div class="section-kicker">WOCHE</div><b>Wochenübersicht</b><div id="range"></div></div></div><div id="days"></div></section>
 </main>
 <div id="sheet" class="overlay hidden"><div class="sheet"><h2>Wer bist du?</h2><p>Die Zeiten werden pro Person getrennt gespeichert.</p><div id="people"></div></div></div>
-<div id="manualSheet" class="overlay hidden"><div class="sheet"><h2>Zeit eintragen</h2><label>Datum<input id="mDate" type="date"></label><div class="grid"><label>Von<input id="mStart" type="time"></label><label>Bis<input id="mEnd" type="time"></label></div><div class="actions"><button id="cancel">Abbrechen</button><button id="saveManual">Speichern</button></div></div></div>
+<div id="manualSheet" class="overlay hidden"><div class="sheet">
+<h2>Zeit manuell erfassen</h2>
+<div class="manual-tabs"><button id="modePunch" class="manual-tab active">Stempelung</button><button id="modeRange" class="manual-tab">Zeitraum</button></div>
+<div id="punchPanel">
+<label>Datum<input id="pDate" type="date"></label>
+<label>Zeit<input id="pTime" type="time"></label>
+<div class="punch-actions"><button id="manualIn" class="punch-in">→ Einstempeln</button><button id="manualOut" class="punch-out">← Ausstempeln</button></div>
+<div class="manual-hint">Ein einzelner Zeitpunkt wird als Ein- oder Ausstempelung gespeichert.</div>
+</div>
+<div id="rangePanel" class="hidden">
+<label>Datum<input id="mDate" type="date"></label>
+<div class="grid"><label>Von<input id="mStart" type="time"></label><label>Bis<input id="mEnd" type="time"></label></div>
+<button id="saveManual" class="range-save">Zeitraum speichern</button>
+</div>
+<button id="cancel" class="manual-cancel">Schliessen</button>
+</div></div>
 <script src="firebase-config.js"></script><script type="module" src="app.js"></script></body></html>

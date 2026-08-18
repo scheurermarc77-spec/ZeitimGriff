@@ -1,14 +1,10 @@
-ZeitimGriff v6 – Stempelungen pro Tag
+ZeitimGriff v7
 
-Neu:
-- Jeden Tag in der Wochenübersicht antippen.
-- Alle Ein- und Ausstempelungen des Tages erscheinen darunter.
-- Startzeit, Endzeit und Dauer sind ersichtlich.
-- Eine laufende Stempelung wird als «xx:xx – läuft» angezeigt.
-- Abgeschlossene Stempelungen können einzeln gelöscht werden.
-- Nach dem Löschen werden Tages- und Wochenwerte automatisch neu berechnet.
-- Firebase, gemeinsame Übersicht und DALM-on-Fire-Icon bleiben erhalten.
+Neu bei «Zeit eintragen»:
+- Modus «Stempelung»: einzelne Zeit als Einstempeln oder Ausstempeln erfassen.
+- Beispiel: 07:45 Einstempeln, später 12:10 Ausstempeln → 07:45–12:10.
+- Modus «Zeitraum»: Anfangs- und Endzeit weiterhin direkt gemeinsam eintragen.
+- Offene Einstempelungen vergangener Tage werden nicht laufend bis heute hochgerechnet.
+- Bestehende Tages-Stempelungen bleiben sichtbar und löschbar.
 
-UPLOAD:
-Alle Dateien aus diesem ZIP hochladen und die bisherigen Dateien ersetzen.
-Danach die Webseite in Safari neu laden.
+Alle Dateien hochladen und die bisherigen ersetzen.

@@ -25,3 +25,10 @@
 .stamp-running .stamp-main{color:#0d9369}
 .stamp-empty{font-size:12px;color:#8a94a6;padding:4px 2px}
 .day-chevron{font-size:12px;color:#9aa3b2;margin-left:5px}
+
+.manual-tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0}
+.manual-tab{background:#eef1f5;color:#626c7d}.manual-tab.active{background:#111827;color:#fff}
+.punch-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.punch-in{background:#e9f8f2;color:#0c8d65}.punch-out{background:#fff1f1;color:#d34b4b}
+.manual-hint{font-size:12px;color:#7c8596;line-height:1.4;margin-top:12px}
+.range-save{width:100%;margin-top:16px;background:#111827;color:#fff}.manual-cancel{width:100%;margin-top:10px}

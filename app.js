@@ -156,14 +156,14 @@ for(let i=0;i<7;i++){
   r.onclick=()=>{if(expandedDays.has(s))expandedDays.delete(s);else expandedDays.add(s);render();};
   const quick=r.querySelector(".daytype-quick");
   if(quick){
-    quick.onclick=(ev)=>{
+    quick.onclick=async(ev)=>{
       ev.stopPropagation();
+      const current=dayType(data,s);
+      const next=current==="normal"?"vacation":current==="vacation"?"holiday":"normal";
+      ensure(s).dayType=next;
+      await save();
       expandedDays.add(s);
       render();
-      setTimeout(()=>{
-        const btn=document.querySelector(`.daytype-quick[data-date="${s}"]`);
-        btn?.closest(".day-wrap")?.querySelector(".daytype-box")?.scrollIntoView({behavior:"smooth",block:"center"});
-      },50);
     };
   }
   wrap.appendChild(r); wrap.appendChild(det); box.appendChild(wrap);

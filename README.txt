@@ -1,14 +1,14 @@
-ZeitimGriff v9 – Tagesdefinition sichtbar
+ZeitimGriff v10 – Tagesdefinition per Direktklick
 
-Verbesserung:
-- In jeder Tageszeile ist nun direkt ein Button sichtbar: «Arbeitstag», «Ferien» oder «Feiertag».
-- Ein Tipp auf diesen Button öffnet direkt die Tagesdefinition.
-- Dort kann mit einem Klick zwischen Arbeitstag, Ferien und Feiertag gewählt werden.
-- Ferien/Feiertag setzen die Sollzeit auf 0:00.
-- Montag bis Freitag bleiben standardmässig Arbeitstage.
-- Samstag/Sonntag bleiben standardmässig ohne Soll.
-- Alle übrigen Funktionen bleiben erhalten.
+Korrektur:
+- Der sichtbare Status-Button in jeder Tageszeile funktioniert jetzt direkt.
+- Jeder Klick wechselt:
+  Arbeitstag → Ferien → Feiertag → Arbeitstag.
+- Ferien und Feiertage setzen die Sollzeit sofort auf 0:00.
+- Das Wochensoll und Plus/Minus werden sofort neu berechnet.
+- Die Auswahl wird in Firebase gespeichert.
+- Die detaillierte Auswahl beim aufgeklappten Tag bleibt zusätzlich bestehen.
 
 UPLOAD:
-Alle Dateien aus diesem ZIP hochladen und vorhandene Dateien ersetzen.
+Alle Dateien aus diesem ZIP hochladen und die bisherigen Dateien ersetzen.
 Danach Safari neu laden.

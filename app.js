@@ -3,11 +3,12 @@ let person=localStorage.getItem("zg_person"), data={}, db=null, unsub=null; let 
 const pad=n=>String(n).padStart(2,"0"), clock=d=>`${pad(d.getHours())}:${pad(d.getMinutes())}`, iso=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`, fmt=m=>`${Math.floor(Math.max(0,m)/60)}:${pad(Math.round(Math.max(0,m))%60)}`;
 const delta=m=>(m>0?"+ ":m<0?"− ":"± ")+fmt(Math.abs(m)), mon=d=>{let x=new Date(d);x.setHours(0,0,0,0);x.setDate(x.getDate()-((x.getDay()+6)%7));return x}, add=(d,n)=>{let x=new Date(d);x.setDate(x.getDate()+n);return x};
 function ensure(ds){data[ds]??={entries:[],running:null};return data[ds]}
-function mins(ds,now=new Date()){let d=data[ds],t=0;if(!d)return 0;for(const e of d.entries||[])t+=(new Date(e.end)-new Date(e.start))/60000;if(d.running&&ds===iso(now))t+=(now-new Date(d.running))/60000;return t}
+function mins(ds,now=new Date()){let d=data[ds],t=0;if(!d)return 0;for(const e of d.entries||[])t+=(new Date(e.end)-new Date(e.start))/60000;if(d.running&&ds===iso(now))t+=(now-new Date(d.running))/60000;t-=lunchMinutes(data,ds);return Math.max(0,t)}
 function target(d){return [0,6].includes(d.getDay())?0:TARGET}
 function dayType(dataset,ds){return dataset?.[ds]?.dayType||"normal"}
 function effectiveTarget(dataset,ds,d){return dayType(dataset,ds)==="normal"?target(d):0}
 function dayTypeLabel(type){return type==="vacation"?"Ferien":type==="holiday"?"Feiertag":""}
+function lunchMinutes(dataset,ds){return dataset?.[ds]?.lunchBreak30?30:0}
 async function initFB(){const cfg=window.TIMEAPP_FIREBASE_CONFIG;if(!cfg)return;const {initializeApp}=await import("https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js");const {getFirestore,doc,setDoc,onSnapshot}=await import("https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js");db=getFirestore(initializeApp(cfg));window.F={doc,setDoc,onSnapshot}}
 function subscribe(){
 if(unsub){ if(Array.isArray(unsub))unsub.forEach(u=>u()); else unsub(); }
@@ -24,7 +25,7 @@ const ref=F.doc(db,"timeappUsers",person);
 unsub=F.onSnapshot(ref,s=>{data=s.exists()?(s.data().days||{}):{};render()});
 }
 async function save(){await F.setDoc(F.doc(db,"timeappUsers",person),{days:data,updatedAt:new Date().toISOString()},{merge:true})}
-function calcMins(dataset,ds,now=new Date()){let d=dataset?.[ds],t=0;if(!d)return 0;for(const e of d.entries||[])t+=(new Date(e.end)-new Date(e.start))/60000;if(d.running)t+=(now-new Date(d.running))/60000;return t}
+function calcMins(dataset,ds,now=new Date()){let d=dataset?.[ds],t=0;if(!d)return 0;for(const e of d.entries||[])t+=(new Date(e.end)-new Date(e.start))/60000;if(d.running&&ds===iso(now))t+=(now-new Date(d.running))/60000;t-=lunchMinutes(dataset,ds);return Math.max(0,t)}
 function renderOverview(){
  if(currentView!=="overview")return;
  $("#tabMine").classList.remove("active");$("#tabOverview").classList.add("active");
@@ -86,6 +87,23 @@ function renderStampDetails(ds, container){
   }
 
   container.appendChild(list);
+
+  const lunchOn=!!data?.[ds]?.lunchBreak30;
+  const lunch=document.createElement("button");
+  lunch.className="lunch-btn"+(lunchOn?" active":"");
+  lunch.textContent=lunchOn?"✓ 30′ Mittagspause eingetragen":"＋ 30′ Mittagspause";
+  lunch.onclick=async(ev)=>{
+    ev.stopPropagation();
+    ensure(ds).lunchBreak30=!lunchOn;
+    await save();
+    expandedDays.add(ds);
+    render();
+  };
+  container.appendChild(lunch);
+  const lunchNote=document.createElement("div");
+  lunchNote.className="lunch-note";
+  lunchNote.textContent=lunchOn?"30 Minuten werden von der Arbeitszeit dieses Tages abgezogen.":"Mit einem Klick werden 30 Minuten von der Tagesarbeitszeit abgezogen.";
+  container.appendChild(lunchNote);
 
   const type=dayType(data,ds);
   const controls=document.createElement("div");
@@ -150,7 +168,7 @@ for(let i=0;i<7;i++){
   let wrap=document.createElement("div"); wrap.className="day-wrap";
   let r=document.createElement("div"); r.className="day";
   const stampCount=(data[s]?.entries||[]).length + (data[s]?.running?1:0);
-  r.innerHTML=`<div><b>${d.toLocaleDateString("de-CH",{weekday:"short"})}</b><div>${d.toLocaleDateString("de-CH",{day:"2-digit",month:"2-digit"})}</div></div><div>${t?`Soll ${fmt(t)}`:(dtype!=="normal"?"Soll 0:00":"ohne Soll")}<div>${stampCount} Stempelung${stampCount===1?"":"en"} <span class="day-chevron">${expandedDays.has(s)?"▲":"▼"}</span></div><button class="daytype-quick ${dtype}" data-date="${s}">${dtype==="normal"?"Arbeitstag":dayTypeLabel(dtype)}</button></div><div><strong>${fmt(x)}</strong><div class="${t?(z>=0?"good":"bad"):(x?"good":"")}">${t?delta(z):(x?"+ "+fmt(x):"± 0:00")}</div></div>`;
+  r.innerHTML=`<div><b>${d.toLocaleDateString("de-CH",{weekday:"short"})}</b><div>${d.toLocaleDateString("de-CH",{day:"2-digit",month:"2-digit"})}</div></div><div>${t?`Soll ${fmt(t)}`:(dtype!=="normal"?"Soll 0:00":"ohne Soll")}<div>${stampCount} Stempelung${stampCount===1?"":"en"} <span class="day-chevron">${expandedDays.has(s)?"▲":"▼"}</span></div><button class="daytype-quick ${dtype}" data-date="${s}">${dtype==="normal"?"Arbeitstag":dayTypeLabel(dtype)}</button>${data[s]?.lunchBreak30?`<span class="lunch-chip">30′ Pause</span>`:""}</div><div><strong>${fmt(x)}</strong><div class="${t?(z>=0?"good":"bad"):(x?"good":"")}">${t?delta(z):(x?"+ "+fmt(x):"± 0:00")}</div></div>`;
   let det=document.createElement("div"); det.className="day-details"+(expandedDays.has(s)?"":" hidden");
   renderStampDetails(s,det);
   r.onclick=()=>{if(expandedDays.has(s))expandedDays.delete(s);else expandedDays.add(s);render();};
